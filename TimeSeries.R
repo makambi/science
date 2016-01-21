@@ -30,6 +30,10 @@ plot.ts(data_sma)
 
 
 #http://stackoverflow.com/questions/10302261/forecasting-time-series-data
+library(forecast)
 
 
+data <- xts(x=data$Dat1, order.by = data$dates)
+data.ts <- ts(data, frequency = 12)
+plot(forecast(ets(data.ts), 3))
 
