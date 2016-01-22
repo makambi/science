@@ -18,9 +18,9 @@ vignettes/*.pdf
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
 
-/Test.xlsx
-/Untitled Document~
+/*.csv
+/*.xlsx
+/*~
 /description
-/description~
 
-/time-series.csv
+
