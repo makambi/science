@@ -1,6 +1,12 @@
 #http://a-little-book-of-r-for-time-series.readthedocs.org/en/latest/src/timeseries.html
 #http://www.slideshare.net/rdatamining/time-series-analysis-and-mining-with-r
 
+#http://habrahabr.ru/post/207160/
+#https://habrahabr.ru/post/210530/
+
+#https://onlinecourses.science.psu.edu/stat510/?q=node/67
+
+#http://stackoverflow.com/questions/10302261/forecasting-time-series-data
 
 data_path <- "Desktop/DataAnalysis/Soft/time-series.csv"
 data <- read.csv(data_path, header = TRUE, sep = '\t')
@@ -16,6 +22,11 @@ data_ts <- ts(data)
 
 plot.ts(data_ts)
 
+par(mfrow=c(1,1))
+hist(data$Dat1)
+
+hist(data$Dat2)
+
 library("TTR")
 dat1_sma25 <- SMA(dat1_ts, 5)
 
@@ -24,19 +35,27 @@ plot.ts(dat1_sma25)
 plot.ts(dat1_ts)
 
 #also check stl for decomposing
-decompose(dat1_ts)
+dat1_components <- decompose(dat1_ts)
+
+plot(dat1_components)
+
+#Seasonally Adjusting
+components_adjusted <- dat1_ts - dat1_components$seasonal
+
+par(mfrow=c(2,1))
+plot.ts(components_adjusted)
+plot.ts(dat1_ts)
 
 
-f <- decompose(data_ts[,c('N', 'Dat1')])
-
-library("TTR")
-dat1_sma <- SMA(data_ts[,'Dat1'],n=10)
 
 
 
-plot.ts(dat1_sma)
 
-decompose(dat1_sma)
+
+x <- xts(x=data$Dat1, order.by = as.Date(seq(1, nrow(data))))
+x.ts = ts(x, freq=365)
+plot(forecast(ets(x.ts), 10))
+
 library(quantmod)
 periodicity(data_ts)
 
@@ -53,7 +72,7 @@ plot(components)
 plot.ts(data_sma)
 
 
-#http://stackoverflow.com/questions/10302261/forecasting-time-series-data
+
 library(forecast)
 
 
