@@ -75,6 +75,33 @@ adf.test(dat2_ts, alternative = "stationary")
 kpss.test(dat1_ts)
 kpss.test(dat2_ts)
 
+
+
+fit <- auto.arima(dat1_ts,seasonal=FALSE,stationary = TRUE)
+fit
+plot(forecast(fit,h=50),include=200)
+
+fit <- auto.arima(dat1_ts,stepwise=FALSE, approximation=FALSE)
+fit
+plot(forecast(fit,h=50),include=200)
+
+par(mfrow=c(1,2))
+Acf(dat1_ts,main="ACF")
+Pacf(dat1_ts,main="PACF")
+
+
+plot(dat2_ts)
+lg_dat2_ts <- log(dat2_ts)
+plot(lg_dat2_ts)
+
+
+tsdisplay(diff(lg_dat2_ts,12),
+          main="Seasonally differenced H02 scripts", xlab="Year")
+
+par(mfrow=c(2,1))
+plot(dat2_ts, ylab="Data 2", xlab="Observation")
+plot(lg_dat2_ts, ylab="Log Data 2", xlab="Observation")
+
 x <- xts(x=data$Dat1, order.by = as.Date(seq(1, nrow(data))))
 x.ts = ts(x, freq=365)
 plot(forecast(ets(x.ts), 10))
