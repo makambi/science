@@ -76,7 +76,6 @@ kpss.test(dat1_ts)
 kpss.test(dat2_ts)
 
 
-
 fit <- auto.arima(dat1_ts,seasonal=FALSE,stationary = TRUE)
 fit
 plot(forecast(fit,h=50),include=200)
