@@ -41,14 +41,38 @@ fit <- kmodes(df, modes = 4)
 plot(jitter(df), col=fit$cluster)
 
 #http://stackoverflow.com/questions/20438019/how-to-perform-clustering-without-removing-rows-where-na-is-present-in-r
+#http://stackoverflow.com/questions/24140339/tree-cut-and-rectangles-around-clusters-for-a-horizontal-dendrogram-in-r
 library("gplots")
 library(cluster)
-d.arg <- daisy(df, metric = c("gower"))
-fit <- hclust(d.arg, method="complete")
+dist <- daisy(df, metric = c("gower"))
+hca <- hclust(d.arg, method="complete")
+k <- 3
+clust <- cutree(hca, k)
 
-fit
-plot(fit)
+library(ggdendro)
+dendr    <- dendro_data(hca, type="rectangle")
+clust.df <- data.frame(label=rownames(iris), cluster=factor(clust))
+dendr[["labels"]]   <- merge(dendr[["labels"]],clust.df, by="label")
+rect <- aggregate(x~cluster,label(dendr),range)
+rect <- data.frame(rect$cluster,rect$x)
+ymax <- mean(hca$height[length(hca$height)-((k-2):(k-1))])
 
 
-a <-  df[c(84,100,127), ]
-View(a)
+
+ggplot() + 
+  geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
+  geom_text(data=label(dendr), aes(x, y, label=label, hjust=0, color=cluster), 
+            size=3) +
+  geom_rect(data=rect, aes(xmin=X1-.3, xmax=X2+.3, ymin=0, ymax=ymax), 
+            color="red", fill=NA)+
+  geom_hline(yintercept=0.33, color="blue")+
+  coord_flip() + scale_y_reverse(expand=c(0.2, 0)) + 
+  theme_dendro()
+
+
+#http://www.r-bloggers.com/multidimensional-scaling-mds-with-r/
+fit <- cmdscale(dist, eig = TRUE, k = 2)
+x <- fit$points[, 1]
+y <- fit$points[, 2]
+plot(x, y)
+
