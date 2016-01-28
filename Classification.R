@@ -39,3 +39,16 @@ hclust(dist(df))
 library(klaR)
 fit <- kmodes(df, modes = 4)
 plot(jitter(df), col=fit$cluster)
+
+#http://stackoverflow.com/questions/20438019/how-to-perform-clustering-without-removing-rows-where-na-is-present-in-r
+library("gplots")
+library(cluster)
+d.arg <- daisy(df, metric = c("gower"))
+fit <- hclust(d.arg, method="complete")
+
+fit
+plot(fit)
+
+
+a <-  df[c(84,100,127), ]
+View(a)
