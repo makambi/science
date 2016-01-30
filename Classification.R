@@ -8,6 +8,7 @@ df <- read.csv(data_path, sep = '\t', header = FALSE, col.names = cols)
 #http://www.r-tutor.com/gpu-computing/clustering/distance-matrix
 #http://www.r-tutor.com/gpu-computing/clustering/hierarchical-cluster-analysis
 
+#http://www.econ.upf.edu/~michael/stanford/maeb7.pdf
 
 dist(as.matrix(df))
 
@@ -57,8 +58,6 @@ rect <- aggregate(x~cluster,label(dendr),range)
 rect <- data.frame(rect$cluster,rect$x)
 ymax <- mean(hca$height[length(hca$height)-((k-2):(k-1))])
 
-
-
 ggplot() + 
   geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
   geom_text(data=label(dendr), aes(x, y, label=label, hjust=0, color=cluster), 
@@ -76,3 +75,9 @@ x <- fit$points[, 1]
 y <- fit$points[, 2]
 plot(x, y)
 
+dist.pam <- pam(dist, k=3, diss = TRUE)
+clusplot(dist.pam)
+?clusplot
+
+
+#weighted variables http://stackoverflow.com/questions/21334677/how-do-i-weight-variables-with-gower-distance-in-r
