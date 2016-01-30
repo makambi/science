@@ -79,5 +79,21 @@ dist.pam <- pam(dist, k=3, diss = TRUE)
 clusplot(dist.pam)
 ?clusplot
 
+#clusters just for weights
+votes <- read.csv(data_path, sep = '\t', header = FALSE, col.names = cols)
+votes <- subset(votes, select = -c(Class) )
 
-#weighted variables http://stackoverflow.com/questions/21334677/how-do-i-weight-variables-with-gower-distance-in-r
+votes.dist <- daisy(votes, metric = "gower", stand = TRUE) #what is stand == TRUE?
+votes.pam <- pam(votes.dist, k=3, diss=TRUE)
+clusplot(votes.pam)
+
+#weighted Class 
+#http://stackoverflow.com/questions/21334677/how-do-i-weight-variables-with-gower-distance-in-r
+
+votes.weighted <- read.csv(data_path, sep = '\t', header = FALSE, col.names = cols)
+votes.weights <- rep(1, ncol(votes))
+votes.weights[which(colnames(votes.weighted) == "Class")] = 3
+
+votes.weighted.dist <- daisy(votes.weighted, metric = "gower", stand = TRUE)
+votes.weighted.pam <- pam(votes.weighted.dist, k=3, diss = TRUE)
+clusplot(votes.weighted.pam)
