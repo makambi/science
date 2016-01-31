@@ -97,3 +97,27 @@ votes.weights[which(colnames(votes.weighted) == "Class")] = 3
 votes.weighted.dist <- daisy(votes.weighted, metric = "gower", stand = TRUE)
 votes.weighted.pam <- pam(votes.weighted.dist, k=3, diss = TRUE)
 clusplot(votes.weighted.pam)
+
+#select number of clusters
+#http://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
+#http://stats.stackexchange.com/questions/723/how-can-i-test-whether-my-clustering-of-binary-data-is-significant/749#749
+
+#silhouette measure of clustering correctness
+#http://www.inside-r.org/r-doc/cluster/silhouette
+#https://en.wikipedia.org/wiki/Silhouette_%28clustering%29
+
+library(fpc)
+votes.best <- pamk(votes.dist)
+cat("number of clusters estimated by optimum average silhouette width:", votes.best$nc, "\n")
+#visualized silhouette width
+plot(pam(votes.dist, votes.best$nc))
+
+#printed clusters
+clusplot(pam(votes.dist, k=votes.best$nc))
+
+#BIC for optimal number of clusters selection
+library(mclust)
+d_clust <- Mclust(as.matrix(votes.dist), G=1:20)
+m.best <- dim(d_clust$z)[2]
+cat("model-based optimal number of clusters:", m.best, "\n")
+plot(d_clust)
