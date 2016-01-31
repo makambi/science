@@ -46,7 +46,7 @@ plot(jitter(df), col=fit$cluster)
 library("gplots")
 library(cluster)
 dist <- daisy(df, metric = c("gower"))
-hca <- hclust(d.arg, method="complete")
+hca <- hclust(dist, method="complete")
 k <- 3
 clust <- cutree(hca, k)
 
@@ -77,7 +77,6 @@ plot(x, y)
 
 dist.pam <- pam(dist, k=3, diss = TRUE)
 clusplot(dist.pam)
-?clusplot
 
 #clusters just for weights
 votes <- read.csv(data_path, sep = '\t', header = FALSE, col.names = cols)
