@@ -4,6 +4,9 @@ cols <- c("Disability program", "Water resourses project", "Adoption project",	"
           "Project on funds",	"Project on crime",	"Project of customs", 	"Project exports",	"Class")
 senators <- read.csv(data_path, sep = '\t', header = FALSE, col.names = cols)
 
+republicans <- senators[senators$Class == "republican",]
+democrats <- senators[senators$Class == "democrat",]
+
 barplot(table(senators$Class), col="grey")
 
 barplot(table(senators$Law.on.religions), col="grey")
@@ -12,37 +15,33 @@ barplot(table(senators$Adoption.project), col="grey")
 
 require(corrgram)
 
-cor.senators <- senators[senators$Class == "republican",]
-cor.senators <- subset(cor.senators, select = -c(Class))
+plotCorrelation <- function (data){
+  
+  data <- subset(data, select = -c(Class))
+  
+  data.reval <-  apply(data, 2, function(column){
+    column <- as.numeric(factor(column, levels=c("no", "abstain", "yes")))
+  })
+  
+  corrgram(data.reval, order = FALSE, cor.method = "kendall")
+  #corrgram(cor.senator.reval, order = FALSE, cor.method = "kendall", lower.panel=panel.ellipse, upper.panel=panel.pie, text.panel=panel.txt)
+}
 
-cor.senator.reval <-  apply(cor.senators, 2, function(column){
-  column <- as.numeric(factor(column, levels=c("no", "abstain", "yes")))
-})
+plotCorrelation(senators)
 
-corrgram(cor.senator.reval, order = FALSE, cor.method = "kendall")
+mosaicplot(senators$Class ~ senators$Nicaragua.assistance.project, shade=FALSE, color=TRUE, main="Nicaragua assistance project", xlab = "Senators", ylab ="Votes")
+mosaicplot(senators$Class ~ senators$Rocket.project, shade=FALSE, color=TRUE, main="Rocket project", xlab = "Senators", ylab ="Votes")
 
-#corrgram(cor.senator.reval, order = FALSE, cor.method = "kendall", lower.panel=panel.ellipse, upper.panel=panel.pie, text.panel=panel.txt)
+mosaicplot(senators$Class ~ senators$Salvador.project, shade=FALSE, color=TRUE, main="Salvador project", xlab = "Senators", ylab ="Votes")
+mosaicplot(senators$Class ~ senators$Project.on.funds, shade=FALSE, color=TRUE, main="Project on funds", xlab = "Senators", ylab ="Votes")
 
-cor.senators <- senators[senators$Class == "democrat",]
-cor.senators <- subset(cor.senators, select = -c(Class))
+plotCorrelation(republicans)
 
-cor.senator.reval <-  apply(cor.senators, 2, function(column){
-  column <- as.numeric(factor(column, levels=c("no", "abstain", "yes")))
-})
-
-corrgram(cor.senator.reval, order = FALSE, cor.method = "kendall")
-
-barplot(table(senators$Rocket.project))
-
-barplot(table(senators$Law.on.immigrants))
-
-barplot(table(senators$Law.on.education))
+plotCorrelation(democrats)
+#add heat map for Salvador vs Rocket projects http://www.r-bloggers.com/search/heatmap
 
 
-mosaicplot(senators$Class ~ senators$Law.on.education, shade=FALSE, color=TRUE)
 
-mosaicplot(senators$Class ~ senators$Law.on.immigrants, shade=FALSE, color=TRUE)
 
-mosaicplot(senators$Class ~ senators$Law.on.religions, shade=FALSE, color=TRUE)
 
 
