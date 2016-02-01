@@ -1,0 +1,135 @@
+---
+title: "TimeSeries"
+output: html_document
+---
+
+```{r, echo=FALSE}
+library(forecast)
+library(tseries)
+```
+
+```{r}
+data_path <- "time-series.csv"
+data <- read.csv(data_path, header = TRUE, sep = '\t')
+```
+
+```{r}
+dat1_ts <- ts(data$Dat1)
+```
+
+```{r}
+hist(data$Dat1, main = "Histogram for Data 1")
+```
+
+Looks like random data (white noise) with no trend
+
+```{r}
+plot(dat1_ts, main = "Data 1 time series")
+```
+
+No peaks in autocorrelation function (ACF), partial autocorrelation function (PACF) 
+suggest that data does not depend on previous observations (stationary time series)
+
+```{r}
+tsdisplay(data$Dat1)
+```
+
+p-value for Dickey-Fuller suggest stationarity of the data
+
+```{r}
+adf.test(data$Dat1, alternative = c("stationary"))
+```
+
+KPSS Test
+
+```{r}
+kpss.test(data$Dat1)
+```
+
+Auto ARIMA selects ARIMA(0,0,0) model: 0 for ACF, PACF and 0 differences needed to make data stationary.
+
+```{r}
+dat1_mod_a <- auto.arima(dat1_ts)
+summary(dat1_mod_a)
+```
+
+Forecast selects just expected value and adds margin confidence and prediction intervals 
+
+```{r}
+forecast_1a <- forecast(dat1_mod_a, 200)
+plot(forecast_1a)
+```
+
+From observations to observation's growth for each next point (treating data as non stationary and trying to make it so for prediction)
+
+```{r}
+dat1_diff <- diff(data$Dat1)
+```
+
+Looks like previous value has effect in ACF and few previous values are valid for PACF (next value will be lower than previous)
+
+```{r}
+tsdisplay(dat1_diff)
+```
+
+But coefficients for args are not significant (division < 1)
+
+```{r}
+dat1_diff_ts <- ts(dat1_diff)
+dat1_diff_mod_a <- auto.arima(dat1_diff_ts)
+summary(dat1_diff_mod_a)
+```
+
+```{r}
+hist(data$Dat2, main = "Histogram for Data 2")
+```
+
+Slowly decaying ACF suggests that data is not stationary. Clear positive trend
+
+```{r}
+#non-stationar data with trend, random walk
+tsdisplay(data$Dat2)
+dat2 <- data$Dat2
+```
+
+Stationarity hypothesis is rejected by Kwiatkowski-Phillips-Schmidt-Shin test
+
+```{r}
+dat2_ts <- ts(dat2)
+adf.test(dat2, alternative = c("stationary"))
+kpss.test(dat2)
+```
+
+First diff order to make data stationary
+
+```{r}
+dat2_diff <- diff(dat2)
+```
+
+Time series plot suggest stationarity. ACF and PACF show that value depends on previous values.
+
+```{r}
+tsdisplay(dat2_diff)
+```
+
+Auto ARIMA selects (1,1,2) model. Drift coef 1 suggests that diff was required.
+All coef non zero - they are significant, drift 0.0138 suggests removed positive trend
+
+```{r}
+dat2_mod_a <- auto.arima(dat2_ts)
+summary(dat2_mod_a)
+```
+
+Forecast for 100 values shows future positive trend
+
+```{r}
+forecast_2a <- forecast(dat2_mod_a, 100)
+plot(forecast_2a)
+```
+
+Same for neural networks prediction
+
+```{r}
+nn_fit <- nnetar(dat2)
+plot(forecast(nn_fit, 100))
+```
